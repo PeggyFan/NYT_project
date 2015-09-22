@@ -104,7 +104,33 @@ def scrape_meta(days=1, search_term, coll):
 ##Example
 scrape_meta(days=1, 'Ben Carson', db.table_carson)
 
-links = db.table_hilary.find({},{'web_url': 1, '_id' : 0})
-links_h = []
-for i in links:
-    links_h.append(str(i['web_url']))
+def get_links(coll):
+	links = coll.find({},{'web_url': 1, '_id' : 0})
+	links_list = []
+	for i in links:
+	    link_list.append(str(i['web_url']))
+
+def get_comments(link_list, coll):
+	for url in link_list:
+	    print url
+	    link = "http://api.nytimes.com/svc/community/v3/user-content/url.json?url=" + url
+	    payload = {'api-key': '603ff640088f24876c37e2857d83401f:1:73015248'}     
+	    content = single_query(link, payload)
+	    total = content['results']['totalCommentsFound'] 
+	    if total == 0:
+	        pass
+	    else:
+	        count = ((total/25) + 2)*25
+	        num_pages = list(np.arange(0, count, 25))  
+	            
+	        for i in num_pages:
+	            link = "http://api.nytimes.com/svc/community/v3/user-content/url.json?url=" + url
+	            payload = {'api-key': '60a3f7d54baade3ed03a40bdb5f5e866:3:50984754', 'offset' : i}
+	            for y in range(len(content['results']['comments'])): 
+	                new_data = content['results']['comments'][y]
+	                new_data['web_url'] = url
+	                new_data['_id'] = content['results']['comments'][y]['commentID']
+	                try:
+	                    coll.insert(new_data)
+	                except DuplicateKeyError:
+	                    pass
