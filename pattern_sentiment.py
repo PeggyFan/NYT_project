@@ -24,7 +24,7 @@ NOUN, VERB, ADJECTIVE, ADVERB = \
 
 class Lexicon:
     
-    def __init__(self, path=os.path.join(MODULE, "sentiment.xml"), **kwargs):
+    def __init__(self, path=os.path.join(MODULE, "en-sentiment.xml"), **kwargs):
         """ A lexicon with sentiment scores for words (adjectives).
             A dictionary of words, where each word is a dictionary of part-of-speech tags.
             Each POS-tag is a tuple with polarity (-1.0-1.0), subjectivity (0.0-1.0), intensity (0.5-2.0).
