@@ -8,6 +8,9 @@ import json
 from pymongo.errors import DuplicateKeyError, CollectionInvalid
 from pymongo import MongoClient
 import datetime as dt
+import pandas as pd
+from itertools import *
+
 
 client = MongoClient()
 # Initiate Database
@@ -134,3 +137,21 @@ def get_comments(link_list, coll):
 	                    coll.insert(new_data)
 	                except DuplicateKeyError:
 	                    pass
+
+
+def export_files(coll, name): 
+	comments = list(db_comments.tab.find({}, {'commentBody': 1, 'web_url': 1,  '_id':0})) #exclude ID
+	text = []
+	urls = []
+
+	for i in range(len(comments)):
+	    if comments[i].get('commentBody') == None:
+	        pass
+	    else:
+	        text.append(comments[i]['commentBody'].encode('utf-8'))
+	        urls.append(comments[i]['web_url'])
+
+
+	df = pd.DataFrame(list(izip(text, urls)))
+	df.columns = ['Comment', 'URL']
+	df.to_csv('comments')
